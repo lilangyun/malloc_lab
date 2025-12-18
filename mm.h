@@ -4,8 +4,11 @@ extern int mm_init (void);
 extern void *mm_malloc (size_t size);
 extern void mm_free (void *ptr);
 extern void *mm_realloc(void *ptr, size_t size);
+
 static void *extend_heap(size_t words);
 static void *coalesce(void *bp);
+static void *find_fit(size_t size);
+static void place(void *bp, size_t size);
 
 
 /* 
@@ -22,6 +25,8 @@ typedef struct {
 } team_t;
 
 extern team_t team;
+
+#define MAX(x, y) x < y ? y : x
 
 #define WSIZE 4
 #define DSIZE 8
