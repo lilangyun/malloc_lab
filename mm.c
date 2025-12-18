@@ -60,7 +60,7 @@ int mm_init(void)
     heap_listp += 2*WSIZE;
 
     // 堆拓展
-    if((heap_listp = extend_heap(CHUNKSIZE/WSIZE)) == NULL){
+    if(extend_heap(CHUNKSIZE/WSIZE) == NULL){
         return -1;
     }
     return 0;
