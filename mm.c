@@ -131,13 +131,13 @@ void *mm_realloc(void *ptr, size_t size)
     if(oldptr == NULL){
         return newptr;
     }
-    size = GET_SIZE(newptr);
+    size = GET_SIZE(HDPT(newptr));
     copySize = GET_SIZE(HDPT(oldptr));
     if (size < copySize){
         copySize = size;
     }
+    memcpy(newptr, oldptr, copySize);
     mm_free(oldptr);
-    memcpy(newptr, oldptr, copySize - WSIZE);
     return newptr;
 }
 
