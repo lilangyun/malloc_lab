@@ -176,7 +176,7 @@ static void *coalesce(void *bp){
         bp = PREV_BLKP(bp);
     }
     else{
-        size += GET_SIZE(FTPT(PREV_BLKP(bp))) + GET_SIZE(HDPT(NEXT_BLKP(bp)));
+        size += GET_SIZE(HDPT(PREV_BLKP(bp))) + GET_SIZE(HDPT(NEXT_BLKP(bp)));
         PUT(FTPT(NEXT_BLKP(bp)), PACK(size, 0));
         PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
         bp = PREV_BLKP(bp);
@@ -204,6 +204,7 @@ static void place(void *bp, size_t size){
 
     PUT(HDPT(bp), PACK(size, 1));
     PUT(FTPT(bp), PACK(size, 1));
+
     if(old_size - size >= 2*DSIZE){
         // 分割空闲块
         bp = NEXT_BLKP(bp);
