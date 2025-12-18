@@ -124,10 +124,11 @@ void *mm_realloc(void *ptr, size_t size)
     
     newptr = mm_malloc(size);
     if (newptr == NULL)
-      return NULL;
-    copySize = GET_SIZE(HDPT(oldptr)) - DSIZE;
+        return NULL;
+    size = GET_SIZE(oldptr);
+    copySize = GET_SIZE(HDPT(newptr));
     if (size < copySize)
-      copySize = size;
+        copySize = size;
     memcpy(newptr, oldptr, copySize);
     mm_free(oldptr);
     return newptr;
