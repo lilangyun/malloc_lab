@@ -203,12 +203,13 @@ static void *find_fit(size_t size){
 static void place(void *bp, size_t size){
     size_t old_size = GET_SIZE(HDPT(bp));
 
-    if(old_size > size){
+    if(old_size - size >= 2*DSIZE){
         // 分割空闲块
         PUT(HDPT(bp), PACK(size, 1));
         PUT(FTPT(bp), PACK(size, 1));
-        PUT(HDPT(NEXT_BLKP(bp)), PACK(old_size, 0));
-        PUT(FTPT(NEXT_BLKP(bp)), PACK(old_size, 0));
+        bp = NEXT_BLKP(bp);
+        PUT(HDPT(bp), PACK(old_size - size, 0));
+        PUT(FTPT(bp), PACK(old_size - size, 0));
     }
     else{
         PUT(HDPT(bp), PACK(size, 1));
