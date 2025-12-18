@@ -157,7 +157,7 @@ static void *coalesce(void *bp){
     if(bp == NULL){
         return NULL;
     }
-    size_t prev_alloc = GET_ALLOC(FTPT(PREV_BLKP(bp)));
+    size_t prev_alloc = GET_ALLOC(HDPT(PREV_BLKP(bp)));
     size_t next_alloc = GET_ALLOC(HDPT(NEXT_BLKP(bp)));
     size_t size = GET_SIZE(HDPT(bp));
 
