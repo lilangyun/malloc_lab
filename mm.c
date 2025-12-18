@@ -80,7 +80,7 @@ void *mm_malloc(size_t size)
     }
 
     // 先加边界标记大小再字节对齐
-    size = ALIGN(size + DSIZE);
+    // size = ALIGN(size + DSIZE);
 
     if(size < DSIZE){
         size = 2 *DSIZE;
