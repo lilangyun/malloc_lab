@@ -46,4 +46,4 @@ extern team_t team;
 #define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE((char *)(bp) - WSIZE))
 #define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE((char *)(bp) - DSIZE))
 
-static void *heap_listp;
+static char *heap_listp;

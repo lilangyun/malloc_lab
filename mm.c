@@ -191,7 +191,7 @@ static void *find_fit(size_t size){
     char *bp = heap_listp;
 
     // 确保不是结束块epilogue，在分配堆范围之内
-    while( !((GET_SIZE(HDPT(bp)) == 0) && (GET_ALLOC(HDPT(bp)) == 1)) ){
+    while( GET_SIZE(HDPT(bp)) > 0 ){
         if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
             return bp;
         }
