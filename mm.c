@@ -124,6 +124,7 @@ void *mm_realloc(void *ptr, size_t size)
     
     if(size == 0){
         mm_free(ptr);
+        return NULL;
     }
     newptr = mm_malloc(size);
     if(newptr == NULL)
