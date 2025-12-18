@@ -4,6 +4,8 @@ extern int mm_init (void);
 extern void *mm_malloc (size_t size);
 extern void mm_free (void *ptr);
 extern void *mm_realloc(void *ptr, size_t size);
+static void *extend_heap(size_t words);
+static void *coalesce(void *bp);
 
 
 /* 
@@ -21,3 +23,23 @@ typedef struct {
 
 extern team_t team;
 
+#define WSIZE 4
+#define DSIZE 8
+#define CHUNKSIZE (1<<12)
+
+#define PACK(size, alloc) ((size) | (alloc))
+
+#define GET(p) (*(unsigned int*)(p))
+#define PUT(p, val) (*(unsigned int*)(p)) = val
+
+#define GET_SIZE(p) (GET(p) & ~0x7)
+#define GET_ALLOC(p) (GET(p) & 0x1)
+
+#define HDPT(bp) ((char *)(bp) - WSIZE)
+#define FTPT(bp) ((char *)(bp) - WSIZE + GET_SIZE(HDPT(bp)) - WSIZE)
+
+#define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE((char *)bp - WSIZE))
+#define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE((char *)bp - DSIZE))
+
+void *heap_listp;
+void *heap_brk;
