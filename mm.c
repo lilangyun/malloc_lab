@@ -157,7 +157,7 @@ static void *coalesce(void *bp){
     if(bp == NULL){
         return NULL;
     }
-    size_t prev_alloc = GET_ALLOC(HDPT(PREV_BLKP(bp)));
+    size_t prev_alloc = GET_ALLOC(FTPT(PREV_BLKP(bp)));
     size_t next_alloc = GET_ALLOC(HDPT(NEXT_BLKP(bp)));
     size_t size = GET_SIZE(HDPT(bp));
 
@@ -170,13 +170,13 @@ static void *coalesce(void *bp){
         PUT(FTPT(bp), PACK(size, 0));
     }
     else if((!prev_alloc) && next_alloc){
-        size += GET_SIZE(HDPT(PREV_BLKP(bp)));
+        size += GET_SIZE(FTPT(PREV_BLKP(bp)));
         PUT(FTPT(bp), PACK(size, 0));
-        PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
+        PUT(FTPT(PREV_BLKP(bp)), PACK(size, 0));
         bp = PREV_BLKP(bp);
     }
     else{
-        size += GET_SIZE(HDPT(PREV_BLKP(bp))) + GET_SIZE(HDPT(NEXT_BLKP(bp)));
+        size += GET_SIZE(FTPT(PREV_BLKP(bp))) + GET_SIZE(HDPT(NEXT_BLKP(bp)));
         PUT(FTPT(NEXT_BLKP(bp)), PACK(size, 0));
         PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
         bp = PREV_BLKP(bp);
@@ -202,16 +202,12 @@ static void *find_fit(size_t size){
 static void place(void *bp, size_t size){
     size_t old_size = GET_SIZE(HDPT(bp));
 
+    PUT(HDPT(bp), PACK(size, 1));
+    PUT(FTPT(bp), PACK(size, 1));
     if(old_size - size >= 2*DSIZE){
         // 分割空闲块
-        PUT(HDPT(bp), PACK(size, 1));
-        PUT(FTPT(bp), PACK(size, 1));
         bp = NEXT_BLKP(bp);
         PUT(HDPT(bp), PACK(old_size - size, 0));
         PUT(FTPT(bp), PACK(old_size - size, 0));
-    }
-    else{
-        PUT(HDPT(bp), PACK(size, 1));
-        PUT(FTPT(bp), PACK(size, 1));
     }
 }
