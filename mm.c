@@ -150,6 +150,8 @@ static void *extend_heap(size_t words){
         return NULL;
     }
 
+    bp += WSIZE;
+
     PUT(HDPT(bp), PACK(size,0));
     PUT(FTPT(bp), PACK(size,0));
     PUT(HDPT(NEXT_BLKP(bp)), PACK(0,1));  //epilogue header
