@@ -146,11 +146,9 @@ static void *extend_heap(size_t words){
     size_t size;
     
     size = (words % 2) ? ((words+1) * WSIZE) : (words * WSIZE);
-    if ((void *)(bp = mem_sbrk(size)) == (void *)(-1)){
+    if ((long)(bp = mem_sbrk(size)) == (-1)){
         return NULL;
     }
-
-    bp += WSIZE;
 
     PUT(HDPT(bp), PACK(size,0));
     PUT(FTPT(bp), PACK(size,0));
