@@ -83,14 +83,18 @@ void *mm_malloc(size_t size)
     }
     */
     char *bp;
-    int extendsize;  //堆需要拓展的字节
+    size_t extendsize;  //堆需要拓展的字节
 
     if(size == 0){
         return NULL;
     }
 
-    // 先加边界标记大小再字节对齐
-    size = ALIGN(size + DSIZE);
+    if(size <= DSIZE){
+        size = 2 * DSIZE;
+    }
+    else{
+        size = ALIGN(size + DSIZE);
+    }
 
     if((bp = find_fit(size)) != NULL){
         place(bp, size);
