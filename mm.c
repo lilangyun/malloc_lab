@@ -49,20 +49,20 @@ team_t team = {
  */
 int mm_init(void)
 {
-    if((heap_listp = mem_sbrk(4*WSIZE)) == (void *)(-1)){
-        return -1;
-    }
+    // if((heap_listp = mem_sbrk(4*WSIZE)) == (void *)(-1)){
+    //     return -1;
+    // }
 
-    PUT(heap_listp, 0);
-    PUT(heap_listp + 1*WSIZE, PACK(DSIZE, 1));
-    PUT(heap_listp + 2*WSIZE, PACK(DSIZE, 1));
-    PUT(heap_listp + 3*WSIZE, PACK(0, 1));
-    heap_listp += 2*WSIZE;
+    // PUT(heap_listp, 0);
+    // PUT(heap_listp + 1*WSIZE, PACK(DSIZE, 1));
+    // PUT(heap_listp + 2*WSIZE, PACK(DSIZE, 1));
+    // PUT(heap_listp + 3*WSIZE, PACK(0, 1));
+    // heap_listp += 2*WSIZE;
 
-    // 堆拓展
-    if(extend_heap(CHUNKSIZE/WSIZE) == NULL){
-        return -1;
-    }
+    // // 堆拓展
+    // if(extend_heap(CHUNKSIZE/WSIZE) == NULL){
+    //     return -1;
+    // }
     return 0;
 }
 
