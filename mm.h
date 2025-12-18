@@ -36,7 +36,7 @@ extern team_t team;
 #define GET_ALLOC(p) (GET(p) & 0x1)
 
 #define HDPT(bp) ((char *)(bp) - WSIZE)
-#define FTPT(bp) ((char *)(bp) - WSIZE + GET_SIZE(HDPT(bp)) - WSIZE)
+#define FTPT(bp) ((char *)(bp) + GET_SIZE(HDPT(bp)) - DSIZE)
 
 #define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE((char *)(bp) - WSIZE))
 #define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE((char *)(bp) - DSIZE))

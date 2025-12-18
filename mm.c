@@ -132,12 +132,12 @@ void *mm_malloc(size_t size)
  */
 void mm_free(void *ptr)
 {
-    // size_t size = GET_SIZE(HDPT(ptr));
+    size_t size = GET_SIZE(HDPT(ptr));
 
-    // PUT(HDPT(ptr), PACK(size, 0));
-    // PUT(FTPT(ptr), PACK(size, 0));
+    PUT(HDPT(ptr), PACK(size, 0));
+    PUT(FTPT(ptr), PACK(size, 0));
 
-    // // 合并空闲块
+    // 合并空闲块
     // coalesce(ptr);
 }
 
