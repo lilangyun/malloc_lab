@@ -89,8 +89,8 @@ void *mm_malloc(size_t size)
         return NULL;
     }
 
-    // 字节对齐
-    size = ALIGN(size);
+    // 先加边界标记大小再字节对齐
+    size = ALIGN(size + DSIZE);
 
     if((bp = find_fit(size)) != NULL){
         place(bp, size);
@@ -215,6 +215,4 @@ static void place(void *bp, size_t size){
         PUT(HDPT(bp), PACK(size, 1));
         PUT(FTPT(bp), PACK(size, 1));
     }
-
-    return ;
 }
