@@ -99,7 +99,7 @@ void *mm_malloc(size_t size)
 
     //当前chunk找不到可供使用的空闲链表，新分配一个chunk
     extendsize = MAX(size, CHUNKSIZE);
-    if((bp = mem_sbrk(extendsize/WSIZE)) == NULL){
+    if((bp = extend_heap(extendsize/WSIZE)) == NULL){
         return NULL;
     }
 
