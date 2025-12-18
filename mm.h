@@ -30,7 +30,7 @@ extern team_t team;
 #define PACK(size, alloc) ((size) | (alloc))
 
 #define GET(p) (*(unsigned int*)(p))
-#define PUT(p, val) (*(unsigned int*)(p)) = val
+#define PUT(p, val) (*(unsigned int*)(p) = (val))
 
 #define GET_SIZE(p) (GET(p) & ~0x7)
 #define GET_ALLOC(p) (GET(p) & 0x1)
@@ -38,7 +38,7 @@ extern team_t team;
 #define HDPT(bp) ((char *)(bp) - WSIZE)
 #define FTPT(bp) ((char *)(bp) - WSIZE + GET_SIZE(HDPT(bp)) - WSIZE)
 
-#define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE((char *)bp - WSIZE))
-#define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE((char *)bp - DSIZE))
+#define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE((char *)(bp) - WSIZE))
+#define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE((char *)(bp) - DSIZE))
 
-void *heap_listp;
+static void *heap_listp;

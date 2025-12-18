@@ -54,8 +54,8 @@ int mm_init(void)
     }
 
     PUT(heap_listp, 0);
-    PUT(heap_listp + WSIZE, PACK(8, 1));
-    PUT(heap_listp + 2*WSIZE, PACK(8, 1));
+    PUT(heap_listp + 1*WSIZE, PACK(DSIZE, 1));
+    PUT(heap_listp + 2*WSIZE, PACK(DSIZE, 1));
     PUT(heap_listp + 3*WSIZE, PACK(0, 1));
     heap_listp += 2*WSIZE;
 
@@ -88,29 +88,27 @@ static void *coalesce(void *bp){
     size_t next_alloc = GET_ALLOC(HDPT(NEXT_BLKP(bp)));
     size_t size = GET_SIZE(HDPT(bp));
 
-    if(prev_alloc & next_alloc){
+    if(prev_alloc && next_alloc){
         return bp;
     }
-    else if(prev_alloc & !next_alloc){
+    else if(prev_alloc && !next_alloc){
         size += GET_SIZE(HDPT(NEXT_BLKP(bp)));
         PUT(HDPT(bp), PACK(size, 0));
         PUT(FTPT(bp), PACK(size, 0));
-        return bp;
     }
-    else if(!prev_alloc & next_alloc){
+    else if(!prev_alloc && next_alloc){
         size += GET_SIZE(HDPT(PREV_BLKP(bp)));
-        bp = PREV_BLKP(bp);
-        PUT(HDPT(bp), PACK(size, 0));
         PUT(FTPT(bp), PACK(size, 0));
-        return bp;
+        PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
+        bp = PREV_BLKP(bp);
     }
     else{
         size += GET_SIZE(HDPT(PREV_BLKP(bp))) + GET_SIZE(HDPT(NEXT_BLKP(bp)));
+        PUT(FTPT(NEXT_BLKP(bp)), PACK(size, 0));
+        PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
         bp = PREV_BLKP(bp);
-        PUT(HDPT(bp), PACK(size, 0));
-        PUT(FTPT(bp), PACK(size, 0));
-        return bp;
     }
+    return bp;
 }
 
 /* 
@@ -135,6 +133,7 @@ void *mm_malloc(size_t size)
 void mm_free(void *ptr)
 {
     size_t size = GET_SIZE(HDPT(ptr));
+
     PUT(HDPT(ptr), PACK(size, 0));
     PUT(FTPT(ptr), PACK(size, 0));
 
