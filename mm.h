@@ -42,4 +42,3 @@ extern team_t team;
 #define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE((char *)bp - DSIZE))
 
 void *heap_listp;
-void *heap_brk;

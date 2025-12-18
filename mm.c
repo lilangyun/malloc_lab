@@ -71,7 +71,7 @@ static void *extend_heap(size_t words){
     size_t size;
     
     size = (words % 2) ? (words+1)*WSIZE : words*WSIZE;
-    if ((long)(bp = mem_sbrk(size)) == -1){
+    if ((void *)(bp = mem_sbrk(size)) == (void *)(-1)){
         return NULL;
     }
 
