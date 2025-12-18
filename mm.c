@@ -137,8 +137,6 @@ void *mm_realloc(void *ptr, size_t size)
     if (size < copySize)
       copySize = size;
     memcpy(newptr, oldptr, copySize);
-    PUT(HDPT(newptr), PACK(copySize, 0));
-    PUT(FTPT(newptr), PACK(copySize, 0));
     mm_free(oldptr);
     return newptr;
 }
