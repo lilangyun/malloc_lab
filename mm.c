@@ -49,7 +49,6 @@ team_t team = {
  */
 int mm_init(void)
 {
-    void *heap_listp;
     if((heap_listp = mem_sbrk(4*WSIZE)) == (void *)(-1)){
         return -1;
     }
@@ -58,7 +57,7 @@ int mm_init(void)
     PUT(heap_listp + WSIZE, PACK(8, 1));
     PUT(heap_listp + 2*WSIZE, PACK(8, 1));
     PUT(heap_listp + 3*WSIZE, PACK(0, 1));
-    heap_listp += WSIZE;
+    heap_listp += 2*WSIZE;
 
     // 堆拓展
     if((heap_listp = extend_heap(CHUNKSIZE/WSIZE)) == NULL){
