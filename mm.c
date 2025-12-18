@@ -135,7 +135,7 @@ void *mm_realloc(void *ptr, size_t size)
         return newptr;
     }
 
-    copySize = GET_SIZE(HDPT(oldptr));
+    copySize = GET_SIZE(HDPT(oldptr)) - DSIZE;  //有效载荷大小
     if (size < copySize){
         copySize = size;
     }
