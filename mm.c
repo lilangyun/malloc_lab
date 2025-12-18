@@ -89,12 +89,8 @@ void *mm_malloc(size_t size)
         return NULL;
     }
 
-    if(size <= DSIZE){
-        size = 2 * DSIZE;
-    }
-    else{
-        size = ALIGN(size + DSIZE);
-    }
+    // 先加边界标记大小再字节对齐
+    size = ALIGN(size + DSIZE);
 
     if((bp = find_fit(size)) != NULL){
         place(bp, size);
@@ -137,14 +133,13 @@ void *mm_realloc(void *ptr, size_t size)
     newptr = mm_malloc(size);
     if (newptr == NULL)
       return NULL;
-    copySize = *(size_t *)((char *)oldptr - SIZE_T_SIZE);
+    copySize = GET_SIZE(HDPT(oldptr));
     if (size < copySize)
       copySize = size;
     memcpy(newptr, oldptr, copySize);
     mm_free(oldptr);
     return newptr;
 }
-
 
 static void *extend_heap(size_t words){
     char *bp;
