@@ -82,6 +82,13 @@ void *mm_malloc(size_t size)
     // 先加边界标记大小再字节对齐
     size = ALIGN(size + DSIZE);
 
+    if(size < DSIZE){
+        size = 2 *DSIZE;
+    }
+    else{
+        size = DSIZE * ((size + DSIZE + DSIZE -1) / DSIZE); 
+    }
+
     if((bp = find_fit(size)) != NULL){
         place(bp, size);
         return bp;
@@ -102,6 +109,9 @@ void *mm_malloc(size_t size)
  */
 void mm_free(void *ptr)
 {
+    if(ptr == NULL){
+        return ;
+    }
     size_t size = GET_SIZE(HDPT(ptr));
 
     PUT(HDPT(ptr), PACK(size, 0));
@@ -137,7 +147,7 @@ static void *extend_heap(size_t words){
     size_t size;
     
     size = (words % 2) ? ((words+1) * WSIZE) : (words * WSIZE);
-    if ((void *)(bp = mem_sbrk(size)) == (void *)(-1)){
+    if ((long)(bp = mem_sbrk(size)) == -1){
         return NULL;
     }
 
