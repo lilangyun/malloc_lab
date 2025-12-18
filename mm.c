@@ -79,15 +79,7 @@ void *mm_malloc(size_t size)
         return NULL;
     }
 
-    // 先加边界标记大小再字节对齐
-    // size = ALIGN(size + DSIZE);
-
-    if(size < DSIZE){
-        size = 2 *DSIZE;
-    }
-    else{
-        size = DSIZE * ((size + DSIZE + DSIZE -1) / DSIZE); 
-    }
+    size = ALIGN(size + DSIZE);
 
     if((bp = find_fit(size)) != NULL){
         place(bp, size);
@@ -193,7 +185,7 @@ static void *coalesce(void *bp){
 
 // 寻找适配空闲块
 static void *find_fit(size_t size){
-    char *bp = heap_listp;
+    void *bp = heap_listp;
 
     // 确保不是结束块epilogue，在分配堆范围之内
     while( GET_SIZE(HDPT(bp)) > 0 ){
