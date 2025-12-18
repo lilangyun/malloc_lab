@@ -123,14 +123,16 @@ void *mm_realloc(void *ptr, size_t size)
     size_t copySize;
     
     newptr = mm_malloc(size);
-    if (newptr == NULL)
-        return NULL;
+    if(newptr == NULL)
+        return NULL;  //没有分配成功
     size = GET_SIZE(oldptr);
-    copySize = GET_SIZE(HDPT(newptr));
+    if(oldptr == NULL){
+        return newptr;
+    }
+    copySize = GET_SIZE(HDPT(oldptr));
     if (size < copySize)
         copySize = size;
     memcpy(newptr, oldptr, copySize);
-    mm_free(oldptr);
     return newptr;
 }
 
@@ -211,6 +213,7 @@ static void place(void *bp, size_t size){
         PUT(FTPT(bp), PACK(old_size - size, 0));
     }
     else{
+        // 内部碎片
         PUT(HDPT(bp), PACK(old_size, 1));
         PUT(FTPT(bp), PACK(old_size, 1));
     }
