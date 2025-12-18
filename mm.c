@@ -170,15 +170,15 @@ static void *coalesce(void *bp){
         PUT(FTPT(bp), PACK(size, 0));
     }
     else if((!prev_alloc) && next_alloc){
-        size += GET_SIZE(FTPT(PREV_BLKP(bp)));
+        size += GET_SIZE(HDPT(PREV_BLKP(bp)));
         PUT(FTPT(bp), PACK(size, 0));
-        PUT(FTPT(PREV_BLKP(bp)), PACK(size, 0));
+        PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
         bp = PREV_BLKP(bp);
     }
     else{
-        size += GET_SIZE(FTPT(PREV_BLKP(bp))) + GET_SIZE(HDPT(NEXT_BLKP(bp)));
-        PUT(HDPT(NEXT_BLKP(bp)), PACK(size, 0));
-        PUT(FTPT(PREV_BLKP(bp)), PACK(size, 0));
+        size += GET_SIZE(HDPT(PREV_BLKP(bp))) + GET_SIZE(FTPT(NEXT_BLKP(bp)));
+        PUT(FTPT(NEXT_BLKP(bp)), PACK(size, 0));
+        PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
         bp = PREV_BLKP(bp);
     }
     return bp;
