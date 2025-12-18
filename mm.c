@@ -177,8 +177,8 @@ static void *coalesce(void *bp){
     }
     else{
         size += GET_SIZE(FTPT(PREV_BLKP(bp))) + GET_SIZE(HDPT(NEXT_BLKP(bp)));
-        PUT(FTPT(NEXT_BLKP(bp)), PACK(size, 0));
-        PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
+        PUT(HDPT(NEXT_BLKP(bp)), PACK(size, 0));
+        PUT(FTPT(PREV_BLKP(bp)), PACK(size, 0));
         bp = PREV_BLKP(bp);
     }
     return bp;
