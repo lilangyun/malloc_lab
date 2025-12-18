@@ -137,6 +137,8 @@ void *mm_realloc(void *ptr, size_t size)
     if (size < copySize)
       copySize = size;
     memcpy(newptr, oldptr, copySize);
+    PUT(HDPT(newptr), PACK(copySize, 0));
+    PUT(FTPT(newptr), PACK(copySize, 0));
     mm_free(oldptr);
     return newptr;
 }
@@ -145,7 +147,7 @@ static void *extend_heap(size_t words){
     char *bp;
     size_t size;
     
-    size = (words % 2) ? (words+1)*WSIZE : words*WSIZE;
+    size = (words % 2) ? ((words+1) * WSIZE) : (words * WSIZE);
     if ((void *)(bp = mem_sbrk(size)) == (void *)(-1)){
         return NULL;
     }
