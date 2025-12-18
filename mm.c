@@ -131,6 +131,7 @@ void *mm_realloc(void *ptr, size_t size)
     return newptr;
 }
 
+// 拓展堆
 static void *extend_heap(size_t words){
     char *bp;
     size_t size;
