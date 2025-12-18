@@ -72,16 +72,6 @@ int mm_init(void)
  */
 void *mm_malloc(size_t size)
 {
-    /*  //naive version
-    int newsize = ALIGN(size + SIZE_T_SIZE);
-    void *p = mem_sbrk(newsize);
-    if (p == (void *)-1)
-	return NULL;
-    else {
-        *(size_t *)p = size;
-        return (void *)((char *)p + SIZE_T_SIZE);
-    }
-    */
     char *bp;
     size_t extendsize;  //堆需要拓展的字节
 
@@ -146,7 +136,7 @@ static void *extend_heap(size_t words){
     size_t size;
     
     size = (words % 2) ? ((words+1) * WSIZE) : (words * WSIZE);
-    if ((long)(bp = mem_sbrk(size)) == (-1)){
+    if ((void *)(bp = mem_sbrk(size)) == (void *)(-1)){
         return NULL;
     }
 
@@ -158,7 +148,11 @@ static void *extend_heap(size_t words){
     return coalesce(bp);
 }
 
+// 合并空闲块
 static void *coalesce(void *bp){
+    if(bp == NULL){
+        return NULL;
+    }
     size_t prev_alloc = GET_ALLOC(HDPT(PREV_BLKP(bp)));
     size_t next_alloc = GET_ALLOC(HDPT(NEXT_BLKP(bp)));
     size_t size = GET_SIZE(HDPT(bp));
@@ -186,6 +180,7 @@ static void *coalesce(void *bp){
     return bp;
 }
 
+// 寻找适配空闲块
 static void *find_fit(size_t size){
     char *bp = heap_listp;
 
@@ -199,6 +194,7 @@ static void *find_fit(size_t size){
     return NULL;
 }
 
+// 放置空闲块
 static void place(void *bp, size_t size){
     size_t old_size = GET_SIZE(HDPT(bp));
 
