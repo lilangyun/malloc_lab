@@ -167,12 +167,12 @@ static void *coalesce(void *bp){
     if(prev_alloc && next_alloc){
         return bp;
     }
-    else if(prev_alloc && !next_alloc){
+    else if(prev_alloc && (!next_alloc)){
         size += GET_SIZE(HDPT(NEXT_BLKP(bp)));
         PUT(HDPT(bp), PACK(size, 0));
         PUT(FTPT(bp), PACK(size, 0));
     }
-    else if(!prev_alloc && next_alloc){
+    else if((!prev_alloc) && next_alloc){
         size += GET_SIZE(HDPT(PREV_BLKP(bp)));
         PUT(FTPT(bp), PACK(size, 0));
         PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));

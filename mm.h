@@ -26,7 +26,7 @@ typedef struct {
 
 extern team_t team;
 
-#define MAX(x, y) x < y ? y : x
+#define MAX(x, y) ( (x) < (y) ? (y) : (x))
 
 #define WSIZE 4
 #define DSIZE 8
