@@ -116,7 +116,7 @@ void *mm_malloc(size_t size)
     //     place(bp, size);
     //     return bp;
     // }  //首次适配
-    if((bp = next_fit(size)) != NULL){
+    if((bp = find_fit(size)) != NULL){
         place(bp, size);
         return bp;
     }  //下一次适配
