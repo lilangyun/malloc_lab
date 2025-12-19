@@ -266,6 +266,9 @@ static void *next_fit(size_t size){
 
 // 放置空闲块
 static void place(void *bp, size_t size){
+    if(bp == NULL){
+        return ;
+    }
     size_t old_size = GET_SIZE(HDPT(bp));
 
     if(old_size - size >= 2*DSIZE){
