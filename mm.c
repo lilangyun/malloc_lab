@@ -72,7 +72,7 @@ static void place(void *bp, size_t size);
 #define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE((char *)(bp) - DSIZE))
 
 static char *heap_listp;
-static char *pre_listp;  //用于next_fit算法
+static char *pre_listp;  //next_fit
 
 /* 
  * mm_init - initialize the malloc package.
@@ -88,12 +88,12 @@ int mm_init(void)
     PUT(heap_listp + 2*WSIZE, PACK(DSIZE, 1));
     PUT(heap_listp + 3*WSIZE, PACK(0, 1));
     heap_listp += 2*WSIZE;
-    pre_listp = heap_listp;  //next_fit
 
     // 堆拓展
     if((extend_heap(CHUNKSIZE/WSIZE)) == NULL){
         return -1;
     }
+    pre_listp = heap_listp + WSIZE;  //next_fit
     return 0;
 }
 
@@ -116,7 +116,7 @@ void *mm_malloc(size_t size)
     //     place(bp, size);
     //     return bp;
     // }  //首次适配
-    if((bp = find_fit(size)) != NULL){
+    if((bp = next_fit(size)) != NULL){
         place(bp, size);
         return bp;
     }  //下一次适配
@@ -191,7 +191,7 @@ static void *extend_heap(size_t words){
         return NULL;
     }
 
-    PUT(HDPT(bp), PACK(size,0));
+    PUT(HDPT(bp), PACK(size,0));  //write old epilogue
     PUT(FTPT(bp), PACK(size,0));
     PUT(HDPT(NEXT_BLKP(bp)), PACK(0,1));  //epilogue header
 
