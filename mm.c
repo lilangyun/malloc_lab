@@ -224,7 +224,7 @@ static void place(void *bp, size_t size){
     }
     else{
         // 内部碎片
-        PUT(HDPT(bp), PACK(old_size, 1));
-        PUT(FTPT(bp), PACK(old_size, 1));
+        PUT(HDPT(bp), PACK(old_size, 1));  //注意这里是old_size，有可能比size大
+        PUT(FTPT(bp), PACK(old_size, 1));  //只不过没有分割的必要
     }
 }
