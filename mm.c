@@ -111,14 +111,14 @@ void *mm_malloc(size_t size)
 
     size = ALIGN(size + DSIZE);
 
-    // if((bp = find_fit(size)) != NULL){
-    //     place(bp, size);
-    //     return bp;
-    // }  //首次适配
-    if((bp = next_fit(size)) != NULL){
+    if((bp = find_fit(size)) != NULL){
         place(bp, size);
         return bp;
-    }  //下一次适配
+    }  //首次适配
+    // if((bp = next_fit(size)) != NULL){
+    //     place(bp, size);
+    //     return bp;
+    // }  //下一次适配
     
     //当前chunk找不到可供使用的空闲链表，新分配一个chunk
     extendsize = MAX(size, CHUNKSIZE);
