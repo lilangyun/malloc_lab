@@ -218,20 +218,20 @@ static void *coalesce(void *bp){
     }
     else if((!prev_alloc) && next_alloc){
         size += GET_SIZE(HDPT(PREV_BLKP(bp)));
-        PUT(FTPT(bp), PACK(size, 0));
-        PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
         if(bp == pre_listp){
             pre_listp = PREV_BLKP(bp);
-        }  //下一次适配
+        }
+        PUT(FTPT(bp), PACK(size, 0));
+        PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
         bp = PREV_BLKP(bp);
     }
     else{
         size += GET_SIZE(HDPT(PREV_BLKP(bp))) + GET_SIZE(FTPT(NEXT_BLKP(bp)));
-        PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
-        PUT(FTPT(NEXT_BLKP(bp)), PACK(size, 0));
         if(bp == pre_listp || NEXT_BLKP(bp) == pre_listp){
             pre_listp = PREV_BLKP(bp);
-        }  //下一次适配
+        }
+        PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
+        PUT(FTPT(NEXT_BLKP(bp)), PACK(size, 0));
         bp = PREV_BLKP(bp);
     }
     return bp;
@@ -260,7 +260,7 @@ static void *next_fit(size_t size){
         }
     }
     // 找不到
-    for(bp = heap_listp; bp != pre_listp; bp = NEXT_BLKP(bp)){
+    for(bp = heap_listp; bp < pre_listp; bp = NEXT_BLKP(bp)){
         if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
             return bp;
         }
@@ -282,12 +282,11 @@ static void place(void *bp, size_t size){
         bp = NEXT_BLKP(bp);
         PUT(HDPT(bp), PACK(old_size - size, 0));
         PUT(FTPT(bp), PACK(old_size - size, 0));
-        pre_listp = bp;
     }
     else{
         // 内部碎片
         PUT(HDPT(bp), PACK(old_size, 1));  //注意这里是old_size，有可能比size大
         PUT(FTPT(bp), PACK(old_size, 1));  //只不过没有分割的必要
-        pre_listp = NEXT_BLKP(bp);
     }
+    pre_listp = bp;
 }
