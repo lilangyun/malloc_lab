@@ -128,6 +128,7 @@ void *mm_malloc(size_t size)
     }
 
     place(bp, size);
+    pre_listp = bp;
     return bp;
 }
 
