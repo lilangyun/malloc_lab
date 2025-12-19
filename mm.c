@@ -215,9 +215,6 @@ static void *coalesce(void *bp){
         size += GET_SIZE(HDPT(NEXT_BLKP(bp)));
         PUT(HDPT(bp), PACK(size, 0));
         PUT(FTPT(bp), PACK(size, 0));
-        if(pre_listp == NEXT_BLKP(bp)){
-            pre_listp = bp;
-        }
     }
     else if((!prev_alloc) && next_alloc){
         size += GET_SIZE(HDPT(PREV_BLKP(bp)));
