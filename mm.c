@@ -93,7 +93,7 @@ int mm_init(void)
     if((extend_heap(CHUNKSIZE/WSIZE)) == NULL){
         return -1;
     }
-    pre_listp = heap_listp + WSIZE;  //next_fit
+    pre_listp = heap_listp;  //next_fit
     return 0;
 }
 
@@ -112,7 +112,7 @@ void *mm_malloc(size_t size)
 
     size = ALIGN(size + DSIZE);
 
-    if((bp = find_fit(size)) != NULL){
+    if((bp = next_fit(size)) != NULL){
         place(bp, size);
         return bp;
     }  //下一次适配
