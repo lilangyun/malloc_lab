@@ -209,6 +209,9 @@ static void *coalesce(void *bp){
     }
     else if(prev_alloc && (!next_alloc)){
         size += GET_SIZE(HDPT(NEXT_BLKP(bp)));
+        if(NEXT_BLKP(bp) == pre_listp){
+            pre_listp = bp;
+        }
         PUT(HDPT(bp), PACK(size, 0));
         PUT(FTPT(bp), PACK(size, 0));
     }
@@ -277,10 +280,12 @@ static void place(void *bp, size_t size){
         bp = NEXT_BLKP(bp);
         PUT(HDPT(bp), PACK(old_size - size, 0));
         PUT(FTPT(bp), PACK(old_size - size, 0));
+        pre_listp = bp;
     }
     else{
         // 内部碎片
         PUT(HDPT(bp), PACK(old_size, 1));  //注意这里是old_size，有可能比size大
         PUT(FTPT(bp), PACK(old_size, 1));  //只不过没有分割的必要
+        pre_listp = NEXT_BLKP(bp);
     }
 }
