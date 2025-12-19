@@ -88,6 +88,7 @@ int mm_init(void)
     PUT(heap_listp + 2*WSIZE, PACK(DSIZE, 1));
     PUT(heap_listp + 3*WSIZE, PACK(0, 1));
     heap_listp += 2*WSIZE;
+    pre_listp = NULL;
 
     // 堆拓展
     if((extend_heap(CHUNKSIZE/WSIZE)) == NULL){
@@ -247,14 +248,14 @@ static void *find_fit(size_t size){
 // 下一次适配
 static void *next_fit(size_t size){
     void *bp;
-    for(bp = pre_listp; GET_SIZE(HDPT(bp)) > 0; bp = NEXT_BLKP(bp)){
+    for(bp = pre_listp; (bp != NULL) && (GET_SIZE(HDPT(bp)) > 0); bp = NEXT_BLKP(bp)){
         if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
             pre_listp = bp;
             return bp;
         }
     }
     // 找不到
-    for(bp = heap_listp; bp != pre_listp; bp = NEXT_BLKP(bp)){
+    for(bp = heap_listp; GET_SIZE(HDPT(bp) > 0); bp = NEXT_BLKP(bp)){
         if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
             pre_listp = bp;
             return bp;
