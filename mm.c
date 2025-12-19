@@ -284,18 +284,12 @@ static void place(void *bp, size_t size){
         // 分割空闲块
         PUT(HDPT(bp), PACK(size, 1));
         PUT(FTPT(bp), PACK(size, 1));
-        if(bp == pre_listp){
-            pre_listp = NEXT_BLKP(bp);
-        }
         bp = NEXT_BLKP(bp);
         PUT(HDPT(bp), PACK(old_size - size, 0));
         PUT(FTPT(bp), PACK(old_size - size, 0));
     }
     else{
         // 内部碎片
-        if(bp == pre_listp){
-            pre_listp = NEXT_BLKP(bp);
-        }
         PUT(HDPT(bp), PACK(old_size, 1));  //注意这里是old_size，有可能比size大
         PUT(FTPT(bp), PACK(old_size, 1));  //只不过没有分割的必要
     }
