@@ -88,7 +88,7 @@ int mm_init(void)
     PUT(heap_listp + 2*WSIZE, PACK(DSIZE, 1));
     PUT(heap_listp + 3*WSIZE, PACK(0, 1));
     heap_listp += 2*WSIZE;
-    pre_listp = heap_listp;
+    pre_listp = heap_listp;  //next_fit
 
     // 堆拓展
     if((extend_heap(CHUNKSIZE/WSIZE)) == NULL){
@@ -215,7 +215,7 @@ static void *coalesce(void *bp){
         size += GET_SIZE(HDPT(NEXT_BLKP(bp)));
         PUT(HDPT(bp), PACK(size, 0));
         PUT(FTPT(bp), PACK(size, 0));
-        if(bp == NEXT_BLKP(bp)){
+        if(pre_listp == NEXT_BLKP(bp)){
             pre_listp = bp;
         }
     }
