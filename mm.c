@@ -88,10 +88,9 @@ int mm_init(void)
     PUT(heap_listp + 2*WSIZE, PACK(DSIZE, 1));
     PUT(heap_listp + 3*WSIZE, PACK(0, 1));
     heap_listp += 2*WSIZE;
-    pre_listp = heap_listp;
 
     // 堆拓展
-    if(extend_heap(CHUNKSIZE/WSIZE) == NULL){
+    if((pre_listp = extend_heap(CHUNKSIZE/WSIZE)) == NULL){
         return -1;
     }
     return 0;
@@ -121,7 +120,6 @@ void *mm_malloc(size_t size)
         return bp;
     }  //下一次适配
     
-
     //当前chunk找不到可供使用的空闲链表，新分配一个chunk
     extendsize = MAX(size, CHUNKSIZE);
     if((bp = extend_heap(extendsize/WSIZE)) == NULL){
