@@ -247,15 +247,15 @@ static void *find_fit(size_t size){
 
 // 下一次适配
 static void *next_fit(size_t size){
-    void *bp = pre_listp;
-    for(; GET_SIZE(HDPT(bp)) > 0; bp = NEXT_BLKP(bp)){
+    void *bp;
+    for(bp = pre_listp; GET_SIZE(HDPT(bp)) > 0; bp = NEXT_BLKP(bp)){
         if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
             pre_listp = bp;
             return bp;
         }
     }
     // 找不到
-    for(bp = heap_listp; GET_SIZE(HDPT(bp)) > 0; bp = NEXT_BLKP(bp)){
+    for(bp = heap_listp; bp != pre_listp; bp = NEXT_BLKP(bp)){
         if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
             pre_listp = bp;
             return bp;
