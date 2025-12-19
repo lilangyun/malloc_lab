@@ -1,10 +1,10 @@
 /*
  * mm-naive.c - The fastest, least memory-efficient malloc package.
  * 
- * In this naive approach, a block is allocated by simply incrementing
- * the brk pointer.  A block is pure payload. There are no headers or
- * footers.  Blocks are never coalesced or reused. Realloc is
- * implemented directly using mm_malloc and mm_free.
+ * Next_fit + implicit free list
+ * 
+ * 
+ * 
  *
  * NOTE TO STUDENTS: Replace this header comment with your own header
  * comment that gives a high level description of your solution.
@@ -115,7 +115,7 @@ void *mm_malloc(size_t size)
     if((bp = next_fit(size)) != NULL){
         place(bp, size);
         return bp;
-    }  //下一次适配
+    }  //next_fit
     
     //当前chunk找不到可供使用的空闲链表，新分配一个chunk
     extendsize = MAX(size, CHUNKSIZE);
@@ -211,7 +211,7 @@ static void *coalesce(void *bp){
         size += GET_SIZE(HDPT(NEXT_BLKP(bp)));
         if(NEXT_BLKP(bp) == pre_listp){
             pre_listp = bp;
-        }
+        }  //next_fit
         PUT(HDPT(bp), PACK(size, 0));
         PUT(FTPT(bp), PACK(size, 0));
     }
@@ -221,7 +221,7 @@ static void *coalesce(void *bp){
         PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
         if(bp == pre_listp){
             pre_listp = PREV_BLKP(bp);
-        }  //下一次适配
+        }  //next_fit
         bp = PREV_BLKP(bp);
     }
     else{
@@ -230,7 +230,7 @@ static void *coalesce(void *bp){
         PUT(FTPT(NEXT_BLKP(bp)), PACK(size, 0));
         if(bp == pre_listp || NEXT_BLKP(bp) == pre_listp){
             pre_listp = PREV_BLKP(bp);
-        }  //下一次适配
+        }  //next_fit
         bp = PREV_BLKP(bp);
     }
     return bp;
@@ -280,12 +280,12 @@ static void place(void *bp, size_t size){
         bp = NEXT_BLKP(bp);
         PUT(HDPT(bp), PACK(old_size - size, 0));
         PUT(FTPT(bp), PACK(old_size - size, 0));
-        pre_listp = bp;
+        pre_listp = bp;  //next_fit
     }
     else{
         // 内部碎片
         PUT(HDPT(bp), PACK(old_size, 1));  //注意这里是old_size，有可能比size大
         PUT(FTPT(bp), PACK(old_size, 1));  //只不过没有分割的必要
-        pre_listp = NEXT_BLKP(bp);
+        pre_listp = NEXT_BLKP(bp);  //next_fit
     }
 }
