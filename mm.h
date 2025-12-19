@@ -5,12 +5,6 @@ extern void *mm_malloc (size_t size);
 extern void mm_free (void *ptr);
 extern void *mm_realloc(void *ptr, size_t size);
 
-static void *extend_heap(size_t words);
-static void *coalesce(void *bp);
-static void *find_fit(size_t size);
-static void place(void *bp, size_t size);
-
-
 /* 
  * Students work in teams of one or two.  Teams enter their team name, 
  * personal names and login IDs in a struct of this
@@ -25,26 +19,3 @@ typedef struct {
 } team_t;
 
 extern team_t team;
-
-#define MAX(x, y) ( (x) < (y) ? (y) : (x))
-#define MIN(x, y) ( (x) < (y) ? (x) : (y))
-
-#define WSIZE 4
-#define DSIZE 8
-#define CHUNKSIZE (1<<12)  //块：堆拓展的最小单位
-
-#define PACK(size, alloc) ((size) | (alloc))
-
-#define GET(p) (*(unsigned int*)(p))
-#define PUT(p, val) (*(unsigned int*)(p)) = (val)
-
-#define GET_SIZE(p) (GET(p) & ~0x7)
-#define GET_ALLOC(p) (GET(p) & 0x1)
-
-#define HDPT(bp) ((char *)(bp) - WSIZE)  //Header Pointor
-#define FTPT(bp) ((char *)(bp) + GET_SIZE(HDPT(bp)) - DSIZE)  //Footer Pointor
-
-#define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE((char *)(bp) - WSIZE))
-#define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE((char *)(bp) - DSIZE))
-
-static char *heap_listp;
