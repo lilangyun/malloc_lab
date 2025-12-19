@@ -241,18 +241,18 @@ static void *coalesce(void *bp){
 }
 
 // 首次适配算法
-// static void *find_fit(size_t size){
-//     void *bp = heap_listp;
+static void *find_fit(size_t size){
+    void *bp = heap_listp;
 
-//     // 确保不是结束块epilogue，在分配堆范围之内
-//     while( GET_SIZE(HDPT(bp)) > 0 ){
-//         if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
-//             return bp;
-//         }
-//         bp = NEXT_BLKP(bp);
-//     }
-//     return NULL;
-// }
+    // 确保不是结束块epilogue，在分配堆范围之内
+    while( GET_SIZE(HDPT(bp)) > 0 ){
+        if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
+            return bp;
+        }
+        bp = NEXT_BLKP(bp);
+    }
+    return NULL;
+}
 
 // 下一次适配
 static void *next_fit(size_t size){
