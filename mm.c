@@ -38,6 +38,7 @@ team_t team = {
 static void *extend_heap(size_t words);
 static void *coalesce(void *bp);
 static void *find_fit(size_t size);
+static void *next_fit(size_t size);
 static void place(void *bp, size_t size);
 
 /* single word (4) or double word (8) alignment */
@@ -71,6 +72,7 @@ static void place(void *bp, size_t size);
 #define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE((char *)(bp) - DSIZE))
 
 static char *heap_listp;
+static char *pre_listp;  //用于next_fit算法
 
 /* 
  * mm_init - initialize the malloc package.
@@ -109,10 +111,15 @@ void *mm_malloc(size_t size)
 
     size = ALIGN(size + DSIZE);
 
-    if((bp = find_fit(size)) != NULL){
+    // if((bp = find_fit(size)) != NULL){
+    //     place(bp, size);
+    //     return bp;
+    // }  //首次适配
+    if((bp = next_fit(size)) != NULL){
         place(bp, size);
         return bp;
-    }
+    }  //下一次适配
+    
 
     //当前chunk找不到可供使用的空闲链表，新分配一个chunk
     extendsize = MAX(size, CHUNKSIZE);
@@ -139,6 +146,7 @@ void mm_free(void *ptr)
 
     // 合并空闲块
     coalesce(ptr);
+    pre_listp = ptr;
 }
 
 /*
@@ -224,13 +232,25 @@ static void *coalesce(void *bp){
     return bp;
 }
 
-// 寻找适配空闲块
+// 首次适配算法
 static void *find_fit(size_t size){
     void *bp = heap_listp;
 
     // 确保不是结束块epilogue，在分配堆范围之内
     while( GET_SIZE(HDPT(bp)) > 0 ){
-        if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) > size) ){
+        if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
+            return bp;
+        }
+        bp = NEXT_BLKP(bp);
+    }
+    return NULL;
+}
+
+// 下一次适配
+static void *next_fit(size_t size){
+    void *bp;
+    for(bp = pre_listp; GET_SIZE(HDPT(bp)) > 0; bp = NEXT_BLKP(bp)){
+        if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
             return bp;
         }
         bp = NEXT_BLKP(bp);
