@@ -215,6 +215,9 @@ static void *coalesce(void *bp){
         size += GET_SIZE(HDPT(NEXT_BLKP(bp)));
         PUT(HDPT(bp), PACK(size, 0));
         PUT(FTPT(bp), PACK(size, 0));
+        if(bp == NEXT_BLKP(bp)){
+            pre_listp = bp;
+        }
     }
     else if((!prev_alloc) && next_alloc){
         size += GET_SIZE(HDPT(PREV_BLKP(bp)));
@@ -238,18 +241,18 @@ static void *coalesce(void *bp){
 }
 
 // 首次适配算法
-static void *find_fit(size_t size){
-    void *bp = heap_listp;
+// static void *find_fit(size_t size){
+//     void *bp = heap_listp;
 
-    // 确保不是结束块epilogue，在分配堆范围之内
-    while( GET_SIZE(HDPT(bp)) > 0 ){
-        if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
-            return bp;
-        }
-        bp = NEXT_BLKP(bp);
-    }
-    return NULL;
-}
+//     // 确保不是结束块epilogue，在分配堆范围之内
+//     while( GET_SIZE(HDPT(bp)) > 0 ){
+//         if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
+//             return bp;
+//         }
+//         bp = NEXT_BLKP(bp);
+//     }
+//     return NULL;
+// }
 
 // 下一次适配
 static void *next_fit(size_t size){
