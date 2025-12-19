@@ -111,14 +111,14 @@ void *mm_malloc(size_t size)
 
     size = ALIGN(size + DSIZE);
 
-    if((bp = find_fit(size)) != NULL){
-        place(bp, size);
-        return bp;
-    }  //首次适配
-    // if((bp = next_fit(size)) != NULL){
+    // if((bp = find_fit(size)) != NULL){
     //     place(bp, size);
     //     return bp;
-    // }  //下一次适配
+    // }  //首次适配
+    if((bp = next_fit(size)) != NULL){
+        place(bp, size);
+        return bp;
+    }  //下一次适配
     
     //当前chunk找不到可供使用的空闲链表，新分配一个chunk
     extendsize = MAX(size, CHUNKSIZE);
@@ -145,7 +145,6 @@ void mm_free(void *ptr)
 
     // 合并空闲块
     coalesce(ptr);
-    pre_listp = ptr;
 }
 
 /*
@@ -250,13 +249,15 @@ static void *next_fit(size_t size){
     void *bp;
     for(bp = pre_listp; GET_SIZE(HDPT(bp)) > 0; bp = NEXT_BLKP(bp)){
         if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
+            pre_listp = bp;
             return bp;
         }
         bp = NEXT_BLKP(bp);
     }
     // 找不到
-    for(bp = heap_listp; GET_SIZE(HDPT(bp)) > 0; bp = NEXT_BLKP(bp)){
+    for(bp = heap_listp; bp != pre_listp; bp = NEXT_BLKP(bp)){
         if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
+            pre_listp = bp;
             return bp;
         }
         bp = NEXT_BLKP(bp);
