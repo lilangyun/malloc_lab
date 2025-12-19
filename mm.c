@@ -255,6 +255,7 @@ static void *next_fit(size_t size){
         }
     }
     // 找不到
+    return NULL;
     for(bp = heap_listp; bp != pre_listp; bp = NEXT_BLKP(bp)){
         if( (!GET_ALLOC(HDPT(bp))) && (GET_SIZE(HDPT(bp)) >= size) ){
             pre_listp = bp;
