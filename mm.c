@@ -88,6 +88,7 @@ int mm_init(void)
     PUT(heap_listp + 2*WSIZE, PACK(DSIZE, 1));
     PUT(heap_listp + 3*WSIZE, PACK(0, 1));
     heap_listp += 2*WSIZE;
+    pre_listp = heap_listp;
 
     // 堆拓展
     if(extend_heap(CHUNKSIZE/WSIZE) == NULL){
