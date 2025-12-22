@@ -78,10 +78,10 @@ static size_t get_index(size_t size);  //确认放入哪个链表
 #define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE((char *)(bp) - WSIZE))  //根据header确定位置
 #define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE((char *)(bp) - DSIZE))  //根据footer确定位置
 
-#define NEXT_NODE(bp) (mem_heap_lo() + *((int *)(bp)) )
-#define PREV_NODE(bp) (mem_heap_lo() + *((unsigned int*)((char *)(bp) + WSIZE)) )
-#define SET_NEXT_NODE(bp, val) ((*(unsigned int*)(bp)) = val)
-#define SET_PREV_NODE(bp, val) ((*((unsigned int*)((char *)(bp) + WSIZE))) = val)
+#define NEXT_NODE(bp) ((char *)mem_heap_lo() + *((int *)(bp)) )
+#define PREV_NODE(bp) ((char *)mem_heap_lo() + *((unsigned int*)((char *)(bp) + WSIZE)) )
+#define SET_NEXT_NODE(bp, val) ((*(unsigned int*)(bp)) = ((unsigned)(long)val))
+#define SET_PREV_NODE(bp, val) ((*((unsigned int*)((char *)(bp) + WSIZE))) = ((unsigned)(long)val))
 
 static char *heap_listp;  //堆的第一个有效载荷
 static long **free_list;  //分离链表数组
@@ -95,7 +95,7 @@ int mm_init(void)
     free_list = mem_heap_lo();
     int i;
     for(i = 0; i<LIST_NUM; i++){
-        if((heap_listp = mem_sbrk(WSIZE)) == (void *)(-1)){
+        if((heap_listp = mem_sbrk(DSIZE)) == (void *)(-1)){
             return -1;
         }
         free_list[i] = mem_heap_lo();  //表示当前链表为空
@@ -239,8 +239,8 @@ static void *coalesce(void *bp){
         delete_node(NEXT_BLKP(bp));
 
         size += GET_SIZE(HDPT(NEXT_BLKP(bp)));
-        PUT(HDPT(bp), PACK(size, 0));
-        PUT(FTPT(bp), PACK(size, 0));
+        PUT(HDPT(bp), PACK_PLUS(size, 2, 0));
+        PUT(FTPT(bp), PACK_PLUS(size, 2, 0));
     }
     else if((!prev_alloc) && next_alloc){
         // 删除prev_block结点
