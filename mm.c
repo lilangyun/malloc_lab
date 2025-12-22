@@ -376,7 +376,6 @@ void delete_node(void *bp){
     size_t idx = get_index(GET_SIZE(HDPT(bp)));
     char *prev = PREV_NODE(bp);
     char *next = NEXT_NODE(bp);
-    char *tmp;
 
     // bp是头结点
     if(prev == mem_heap_lo()){
