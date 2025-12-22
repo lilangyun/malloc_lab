@@ -79,13 +79,13 @@ static size_t get_index(size_t size);  //确认放入哪个链表
 #define NEXT_BLKP(bp) ((char *)(bp) + GET_SIZE((char *)(bp) - WSIZE))  //根据header确定位置
 #define PREV_BLKP(bp) ((char *)(bp) - GET_SIZE((char *)(bp) - DSIZE))  //根据footer确定位置
 
-#define NEXT_NODE(bp) ((char *)mem_heap_lo() + *((int *)(bp)) )
+#define NEXT_NODE(bp) ((char *)mem_heap_lo() + *((unsigned int *)(bp)) )
 #define PREV_NODE(bp) ((char *)mem_heap_lo() + *((unsigned int*)((char *)(bp) + WSIZE)) )
 #define SET_NEXT_NODE(bp, val) ((*(unsigned int*)(bp)) = ((unsigned)(long)val))
 #define SET_PREV_NODE(bp, val) ((*((unsigned int*)((char *)(bp) + WSIZE))) = ((unsigned)(long)val))
 
 static char *heap_listp;  //堆的第一个有效载荷
-static long **free_list;  //分离链表数组
+static char **free_list;  //分离链表数组
 
 /* 
  * mm_init - initialize the malloc package.
@@ -130,7 +130,6 @@ void *mm_malloc(size_t size)
     char *bp;
     size_t extendsize;  //堆需要拓展的字节
     size_t asize;  //表示adjusted size
-    printf("1111");
 
     if(size == 0){
         return NULL;
