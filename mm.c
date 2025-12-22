@@ -130,6 +130,7 @@ void *mm_malloc(size_t size)
     char *bp;
     size_t extendsize;  //堆需要拓展的字节
     size_t asize;  //表示adjusted size
+    printf("1111");
 
     if(size == 0){
         return NULL;
@@ -138,7 +139,6 @@ void *mm_malloc(size_t size)
     asize = ALIGN(size + WSIZE);  //还需要考虑header的大小
 
     if((bp = find_fit(asize)) != NULL){
-        printf("1111");
         place(bp, asize);
         return bp;
     }
