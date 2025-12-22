@@ -138,6 +138,7 @@ void *mm_malloc(size_t size)
     asize = ALIGN(size + WSIZE);  //还需要考虑header的大小
 
     if((bp = find_fit(asize)) != NULL){
+        printf("1111");
         place(bp, asize);
         return bp;
     }
