@@ -71,6 +71,7 @@ static size_t get_index(size_t size);  //确认放入哪个链表
 
 #define SET_ALLOC(p) (GET(p) |= 0x1)
 #define SET_PREV_ALLOC(p) (GET(p) |= 0x2)  //将prev_alloc置为1
+#define SET_PRE_FREE(p) (GET(p) &= ~0x2)
 
 #define HDPT(bp) ((char *)(bp) - WSIZE)  //Header Pointor
 #define FTPT(bp) ((char *)(bp) + GET_SIZE(HDPT(bp)) - DSIZE)  //Footer Pointor
@@ -246,10 +247,12 @@ static void *coalesce(void *bp){
         // 删除prev_block结点
         delete_node(PREV_BLKP(bp));
 
+        SET_PRE_FREE(HDPT(NEXT_BLKP(bp)));
+
         size += GET_SIZE(HDPT(PREV_BLKP(bp)));
         size_t prev_alloc = GET_PREV_ALLOC(HDPT(PREV_BLKP(bp)));
-        PUT(FTPT(bp), PACK_PLUS(size, prev_alloc,0));
         PUT(HDPT(PREV_BLKP(bp)), PACK_PLUS(size, prev_alloc, 0));
+        PUT(FTPT(bp), PACK_PLUS(size, prev_alloc,0));
         bp = PREV_BLKP(bp);
     }
     else{
