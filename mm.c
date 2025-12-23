@@ -40,12 +40,15 @@ static void place(void *bp, size_t asize);
 static void insert_node(void *bp);
 static void delete_node(void *bp);
 
+static size_t get_idex(size_t asize);  //获取asize对应的list的idx
+
 /* single word (4) or double word (8) alignment */
 #define ALIGNMENT 8
 
 /* rounds up to the nearest multiple of ALIGNMENT */
 #define ALIGN(size) (((size) + (ALIGNMENT-1)) & ~0x7)
 
+#define LIST_NUM 15
 
 #define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
 
@@ -59,7 +62,7 @@ static void delete_node(void *bp);
 #define PACK(size, alloc) ((size) | (alloc))
 
 #define GET(p) (*(unsigned int*)(p))
-#define PUT(p, val) (*(unsigned int*)(p)) = (val)
+#define PUT(p, val) (*(unsigned int*)(p)) = (val)  // 改变bp所指向内存的值
 
 #define GET_SIZE(p) (GET(p) & ~0x7)
 #define GET_ALLOC(p) (GET(p) & 0x1)
@@ -78,17 +81,26 @@ static void delete_node(void *bp);
 
 
 static char *heap_listp;
-static char *list_start;  // ->heap_listp
+static char *list_start;  // lists基址
 
 /* 
  * mm_init - initialize the malloc package.
  */
 int mm_init(void)
 {
+    // 优先为lists分配list_num个存储位置
+    if((heap_listp = mem_sbrk(LIST_NUM*WSIZE)) == (void *)(-1)){
+        return -1;
+    }
+    for(int i=0; i<LIST_NUM; i++){
+        PUT(heap_listp + i*WSIZE, 0);
+    }
+    list_start = heap_listp;
+
+
     if((heap_listp = mem_sbrk(4*WSIZE)) == (void *)(-1)){
         return -1;
     }
-
     PUT(heap_listp, 0);
     PUT(heap_listp + 1*WSIZE, PACK(DSIZE, 1));
     PUT(heap_listp + 2*WSIZE, PACK(DSIZE, 1));
@@ -100,7 +112,6 @@ int mm_init(void)
         return -1;
     }
 
-    list_start = NULL;  // 表示无free块
     return 0;
 }
 
@@ -258,16 +269,25 @@ static void *coalesce(void *bp){
     return bp;
 }
 
-// 首次适配算法
+// 找到合适的空闲块
 static void *find_fit(size_t asize){
-    void *bp = list_start;
     size_t psize;
-    for(; bp != NULL; bp = NEXT_NDPT(bp)){
-        psize = GET_SIZE(HDPT(bp));
-        if( psize >= asize){
-            return bp;
+    void *tmp;  // 临时变量
+
+    size_t idex = get_idex(asize);
+    void *bp = list_start + idex*WSIZE;
+
+    for(; bp != list_start + LIST_NUM*WSIZE; bp += WSIZE){
+        tmp = GET(bp);
+        while(tmp != NULL){
+            psize = GET_SIZE(HDPT(tmp));
+            if(psize >= asize){
+                return tmp;
+            }
+            tmp = NEXT_NDPT(tmp);
         }
     }
+
     return NULL;
 }
 
@@ -303,20 +323,31 @@ static void insert_node(void *bp){
     if(bp == NULL){
         return ;  // 安全检查
     }
-    if(list_start == NULL){
-        list_start = bp;
+
+    // 获取idex
+    size_t idex = get_idex(GET_SIZE(HDPT(bp)));
+    void *list_head = list_start + idex*WSIZE;
+    void *first_node = GET(list_head);  // 指向首元素的指针
+
+    if(first_node == NULL){
+        PUT(list_head, bp);
     }
     else{
-        SET_NEXT_NDPT(bp, list_start);
-        SET_PREV_NDPT(list_start, bp);
-        list_start = bp;
+        SET_NEXT_NDPT(bp, first_node);
+        SET_PREV_NDPT(first_node, bp);
+        PUT(list_head, bp);
     }
 }
 
 static void delete_node(void *bp){
     if((bp == NULL) || GET_ALLOC(HDPT(bp))){
-        return ;
+        return ;  // 安全检查
     }
+
+    // 获取idex
+    size_t idex = get_idex(GET_SIZE(HDPT(bp)));
+    void *list_head = list_start + idex*WSIZE;  // 指向lists[idex]的指针
+
     void *prev = PREV_NDPT(bp);
     void *next = NEXT_NDPT(bp);
 
@@ -324,11 +355,11 @@ static void delete_node(void *bp){
     SET_NEXT_NDPT(bp, 0);
 
     if((prev == NULL) && (next == NULL)){
-        list_start = NULL;
+        PUT(list_head, 0);
     }
     else if(prev == NULL){
         SET_PREV_NDPT(next, prev);
-        list_start = next;
+        PUT(list_head, next);
     }
     else if(next == NULL){
         SET_NEXT_NDPT(prev, 0);
@@ -337,4 +368,37 @@ static void delete_node(void *bp){
         SET_NEXT_NDPT(prev, next);
         SET_PREV_NDPT(next, prev);
     }
+}
+
+static size_t get_idex(size_t asize){
+    if (asize <= 24)
+        return 0;
+    if (asize <= 32)
+        return 1;
+    if (asize <= 64)
+        return 2;
+    if (asize <= 80)
+        return 3;
+    if (asize <= 120)
+        return 4;
+    if (asize <= 240)
+        return 5;
+    if (asize <= 480)
+        return 6;
+    if (asize <= 960)
+        return 7;
+    if (asize <= 1920)
+        return 8;
+    if (asize <= 3840)
+        return 9;
+    if (asize <= 7680)
+        return 10;
+    if (asize <= 15360)
+        return 11;
+    if (asize <= 30720)
+        return 12;
+    if (asize <= 61440)
+        return 13;
+    else
+        return 14;
 }
