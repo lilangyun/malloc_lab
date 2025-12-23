@@ -256,7 +256,7 @@ static void *coalesce(void *bp){
 static void *find_fit(size_t asize){
     void *bp = list_start;
     size_t psize;
-    for(; bp != 0; bp = NEXT_NDPT(bp)){
+    for(; bp != NULL; bp = NEXT_NDPT(bp)){
         psize = GET_SIZE(HDPT(bp));
         if( psize >= asize){
             return bp;
@@ -283,7 +283,8 @@ static void place(void *bp, size_t asize){
         SET_NEXT_NDPT(bp, 0);
 
         // 在free_list中添加新结点
-        insert_node(bp);
+        // insert_node(bp);
+        coalesce(bp);
     }
     else{
         // 内部碎片
