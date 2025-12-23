@@ -1,7 +1,7 @@
 /*
  * mm-naive.c - The fastest, least memory-efficient malloc package.
  * 
- * explicit free list
+ * explicit free list --> segrated free list
  *
  * NOTE TO STUDENTS: Replace this header comment with your own header
  * comment that gives a high level description of your solution.
