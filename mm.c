@@ -305,7 +305,7 @@ static void insert_node(void *bp){
 }
 
 static void delete_node(void *bp){
-    if((bp == NULL) || (list_start == NULL) || GET_ALLOC(HDPT(bp))){
+    if((bp == NULL) || GET_ALLOC(HDPT(bp))){
         return ;
     }
     void *prev = PREV_NDPT(bp);
@@ -314,10 +314,12 @@ static void delete_node(void *bp){
     SET_PREV_NDPT(bp, 0);
     SET_NEXT_NDPT(bp, 0);
 
-    // 如果bp是list头
-    if(prev == NULL){
-        list_start = NEXT_NDPT(bp);
+    if((prev == NULL) && (next == NULL)){
+        list_start = NULL;
+    }
+    else if(prev == NULL){
         SET_PREV_NDPT(next, prev);
+        list_start = next;
     }
     else if(next == NULL){
         SET_NEXT_NDPT(prev, 0);
