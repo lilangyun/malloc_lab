@@ -3,7 +3,7 @@
 #
 
 CC = gcc
-CFLAGS = -Wall -O2 -m32
+CFLAGS = -Wall -O2 -m32   # 规定了32位操作系统--指针大小为4字节
 GITFLAGS = -q --no-verify --allow-empty
 
 OBJS = mdriver.o mm.o memlib.o fsecs.o fcyc.o clock.o ftimer.o
