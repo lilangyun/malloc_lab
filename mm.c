@@ -147,7 +147,6 @@ void mm_free(void *ptr)
 
     PUT(HDPT(ptr), PACK(size, 0));
     PUT(FTPT(ptr), PACK(size, 0));
-
     SET_PREV_NDPT(ptr, 0);
     SET_NEXT_NDPT(ptr, 0);
 
@@ -200,7 +199,6 @@ static void *extend_heap(size_t words){
 
     PUT(HDPT(bp), PACK(size,0));  //write old epilogue
     PUT(FTPT(bp), PACK(size,0));
-
     SET_PREV_NDPT(bp, 0);
     SET_NEXT_NDPT(bp, 0);
 
@@ -258,7 +256,7 @@ static void *coalesce(void *bp){
 static void *find_fit(size_t asize){
     void *bp = list_start;
     size_t psize;
-    for(; bp != NULL; bp = NEXT_NDPT(bp)){
+    for(; bp != 0; bp = NEXT_NDPT(bp)){
         psize = GET_SIZE(HDPT(bp));
         if( psize >= asize){
             return bp;
@@ -281,10 +279,10 @@ static void place(void *bp, size_t asize){
         bp = NEXT_BLKP(bp);
         PUT(HDPT(bp), PACK(old_size - asize, 0));
         PUT(FTPT(bp), PACK(old_size - asize, 0));
-
-        // 在free_list中添加新结点
         SET_PREV_NDPT(bp, 0);
         SET_NEXT_NDPT(bp, 0);
+
+        // 在free_list中添加新结点
         insert_node(bp);
     }
     else{
