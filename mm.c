@@ -200,6 +200,10 @@ static void *extend_heap(size_t words){
 
     PUT(HDPT(bp), PACK(size,0));  //write old epilogue
     PUT(FTPT(bp), PACK(size,0));
+
+    SET_PREV_NDPT(bp, 0);
+    SET_NEXT_NDPT(bp, 0);
+
     PUT(HDPT(NEXT_BLKP(bp)), PACK(0,1));  //epilogue header
 
     // 合并空闲块
