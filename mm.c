@@ -48,7 +48,7 @@ static size_t get_idex(size_t asize);  //获取asize对应的list的idx
 /* rounds up to the nearest multiple of ALIGNMENT */
 #define ALIGN(size) (((size) + (ALIGNMENT-1)) & ~0x7)
 
-#define LIST_NUM 15
+#define LIST_NUM 14
 
 #define SIZE_T_SIZE (ALIGN(sizeof(size_t)))
 
@@ -397,8 +397,8 @@ static size_t get_idex(size_t asize){
         return 11;
     if (asize <= 30720)
         return 12;
-    if (asize <= 61440)
-        return 13;
+    // if (asize <= 61440)
+    //     return 13;
     else
-        return 14;
+        return 13;
 }
