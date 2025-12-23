@@ -371,34 +371,34 @@ static void delete_node(void *bp){
 }
 
 static size_t get_idex(size_t asize){
-    if (asize <= 24)
-        return 0;
     if (asize <= 32)
-        return 1;
+        return 0;
     if (asize <= 64)
+        return 1;
+    if (asize <= 128)
         return 2;
-    if (asize <= 80)
+    if (asize <= 256)
         return 3;
-    if (asize <= 120)
+    if (asize <= 512)
         return 4;
-    if (asize <= 240)
+    if (asize <= 1024)
         return 5;
-    if (asize <= 480)
+    if (asize <= 2048)
         return 6;
-    if (asize <= 960)
+    if (asize <= 4096)
         return 7;
-    if (asize <= 1920)
+    if (asize <= 8192)
         return 8;
-    if (asize <= 3840)
+    if (asize <= 16384)
         return 9;
-    if (asize <= 7680)
-        return 10;
-    if (asize <= 15360)
-        return 11;
-    if (asize <= 30720)
-        return 12;
+    // if (asize <= 32768)
+    //     return 10;
+    // if (asize <= 15360)
+    //     return 11;
+    // if (asize <= 30720)
+    //     return 12;
     // if (asize <= 61440)
     //     return 13;
     else
-        return 13;
+        return 10;
 }
