@@ -138,20 +138,20 @@ void *mm_malloc(size_t size)
 /*
  * mm_free - Freeing a block does nothing.
  */
-void mm_free(void *ptr)
+void mm_free(void *bp)
 {
-    if(ptr == NULL){
+    if(bp == NULL){
         return ;
     }
-    size_t size = GET_SIZE(HDPT(ptr));
+    size_t size = GET_SIZE(HDPT(bp));
 
-    PUT(HDPT(ptr), PACK(size, 0));
-    PUT(FTPT(ptr), PACK(size, 0));
-    SET_PREV_NDPT(ptr, 0);
-    SET_NEXT_NDPT(ptr, 0);
+    PUT(HDPT(bp), PACK(size, 0));
+    PUT(FTPT(bp), PACK(size, 0));
+    SET_PREV_NDPT(bp, 0);
+    SET_NEXT_NDPT(bp, 0);
 
     // 合并空闲块
-    coalesce(ptr);
+    coalesce(bp);
 }
 
 /*
@@ -227,6 +227,8 @@ static void *coalesce(void *bp){
         size += GET_SIZE(HDPT(NEXT_BLKP(bp)));
         PUT(HDPT(bp), PACK(size, 0));
         PUT(FTPT(bp), PACK(size, 0));
+        SET_PREV_NDPT(bp, 0);
+        SET_NEXT_NDPT(bp, 0);
     }
     else if((!prev_alloc) && next_alloc){
 
@@ -236,6 +238,8 @@ static void *coalesce(void *bp){
         PUT(FTPT(bp), PACK(size, 0));
         PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
         bp = PREV_BLKP(bp);
+        SET_PREV_NDPT(bp, 0);
+        SET_NEXT_NDPT(bp, 0);
     }
     else{
         size += GET_SIZE(HDPT(PREV_BLKP(bp))) + GET_SIZE(FTPT(NEXT_BLKP(bp)));
@@ -246,6 +250,8 @@ static void *coalesce(void *bp){
         PUT(HDPT(PREV_BLKP(bp)), PACK(size, 0));
         PUT(FTPT(NEXT_BLKP(bp)), PACK(size, 0));
         bp = PREV_BLKP(bp);
+        SET_PREV_NDPT(bp, 0);
+        SET_NEXT_NDPT(bp, 0);
     }
 
     insert_node(bp);
